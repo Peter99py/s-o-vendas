@@ -72,11 +72,18 @@ apps/web/src/
 
 ### Princípios gerais (valem para os dois repos)
 
-- Modo passivo (padrão). Só modifique o código quando o usuário pedir explicitamente — ver a seção "Modo passivo" no topo.
+- Modo passivo (ver seção no topo): só altere código quando o usuário pedir explicitamente.
 - Mudança mínima e focada. Não refatore além do pedido; siga o estilo existente.
 - Não commite nem crie branches sem pedido explícito. Não desfaça trabalho do usuário.
 - Identificadores em inglês; textos de UI em pt-BR.
 - Dependências fixadas: requirements.txt usa ==; package.json usa versões exatas. Não faça upgrade oportunista — atualize conscientemente.
+
+### Princípios de código
+
+- DRY (Don't Repeat Yourself): evite duplicar conhecimento. Se a mesma regra ou lógica aparece em mais de um lugar, extraia para um ponto único (helper, função, service) e reutilize.
+- Clareza acima de esperteza: código é lido muito mais vezes do que escrito. Prefira soluções simples e explícitas a truques complexos; otimize para quem lê, não para quem escreve.
+- Funções pequenas e com uma responsabilidade: cada função faz uma coisa bem feita. Evite funções longas, muitos parâmetros e efeitos colaterais escondidos.
+- Tratamento de erros: não engula exceções. Propague ou converta com mensagem clara do que falhou e por quê. Use um padrão consistente para erros — no backend, ValidationError nas regras (services.py) e HttpError na API; no frontend, mensagens claras ao usuário.
 
 ### Comentários no código
 
@@ -133,7 +140,7 @@ Obrigatório antes de considerar a tarefa concluída:
   - Frontend: make typecheck já reprova locais e parâmetros não usados (noUnusedLocals/noUnusedParameters).
   - Remova imports, variáveis, funções, arquivos e exports órfãos que você criou e não usou.
 - Código duplicado
-  - Antes de criar um helper/componente/serviço, procure o equivalente (grep pelo nome e por sinônimos; confira packages/ui, lib/, services.py). Reutilize ou extraia para um lugar comum em vez de copiar.
+  - Antes de criar um helper/componente/serviço, procure o equivalente (grep por nome e sinônimos; confira packages/ui, lib/, services.py) e reutilize — ver DRY em "Princípios de código".
   - Ao remover uma função, busque por chamadas remanescentes (grep) para não deixar referência quebrada.
 - Migrações: nenhuma migration pendente (makemigrations --check silencioso).
 
@@ -175,11 +182,10 @@ make preview
 
 Verificado nesta revisão — não presuma o contrário:
 
-- .venv (backend) e node_modules (frontend) não estão instalados no checkout atual. Rode make install antes de validar/rodar.
-- ruff é citado no README do backend mas NÃO está em requirements.txt. Instale/verifique (ex.: pip install ruff) antes de confiar no passo de lint.
+- .venv (backend) e node_modules (frontend) são ignorados pelo Git — não vêm em clone novo. Rode make install quando faltarem.
+- ruff não está em requirements.txt; instale-o (pip install ruff) para rodar o lint da seção de validação.
 - pnpm não está no PATH neste ambiente. O Makefile do frontend cai no fallback npx --yes pnpm@9 — use os alvos make em vez de chamar pnpm direto.
 - Os docs referenciados pelos READMEs (../docs/visao-geral.md, ../docs/modelo-de-dados.md) NÃO existem na árvore. Não conte com eles; a fonte de verdade é o código.
-- O README do backend está desatualizado: omite os apps finance, purchases e reports, que existem no código. Confie na lista do config/settings.py / diretório apps/.
 - Sem ESLint/Prettier no frontend. A rede de segurança é o tsc (make typecheck) + estilo existente.
 - Sem ferramenta de teste no frontend. No backend há tests.py em sales, sync, purchases e reports (Django TestCase).
 - make dev do backend exige Docker e rede local para o Postgres na porta host 5433 (a 5432 fica livre para um Postgres local, se houver).

@@ -115,6 +115,8 @@ apps/web/src/
 
 Rode a validação o mais específico possível ao que mudou e depois amplie. Reporte falhas com o comando e o erro relevante.
 
+Não deixe processos abertos após rodar testes/build: encerre servidores Node (Vite dev/preview) e o backend Python (runserver/gunicorn). Os comandos de teste e build devem terminar sozinhos; se algum processo ficar de pé (servidor, watcher), finalize antes de concluir a tarefa.
+
 ### Backend (s-o-vendas-backend/)
 
 ```sh
